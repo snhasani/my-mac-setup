@@ -1,0 +1,38 @@
+# homebrew_config.yml
+
+- name: Check if Homebrew is installed
+  stat:
+    path: /opt/homebrew/bin/brew
+  register: homebrew_check
+
+- name: Fail if Homebrew is not installed and install_homebrew_if_missing is False
+  fail:      
+    msg: Homebrew is missing, install from http://brew.sh
+  when:
+    - not homebrew_check.stat.exists
+    - not install_homebrew_if_missing
+
+- name: Installing Homebrew
+  shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  when:
+    - not homebrew_check.stat.exists
+    - install_homebrew_if_missing
+
+- name: Add Homebrew to PATH for the session
+  shell: 'eval "$(/opt/homebrew/bin/brew shellenv)"'
+  environment:
+    PATH: "/opt/homebrew/bin:{{ ansible_env.PATH }}"
+  when:
+    - not homebrew_check.stat.exists
+    - install_homebrew_if_missing
+
+- name: Add Homebrew path to .zshrc if it doesn't exist
+  lineinfile:
+    path: ~/.zshrc
+    line: 'export PATH="/opt/homebrew/bin:$PATH"'
+    state: present
+    create: yes
+    insertafter: EOF
+  when:
+    - not homebrew_check.stat.exists
+    - install_homebrew_if_missing

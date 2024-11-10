@@ -1,0 +1,37 @@
+# homebrew.yml
+
+- name: Ensures taps are present via homebrew
+  community.general.homebrew_tap:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - hashicorp/tap
+
+- name: Ensures packages are present via homebrew cask
+  community.general.homebrew_cask:
+    name: "{{ item }}"
+    state: present
+    install_options: 'appdir=/Applications'
+  with_items:
+    - brave-browser
+    - buttercup
+    - dropbox
+    - google-chrome
+    - google-chrome@canary
+    - obsidian
+    - rectangle
+    - spotify
+    - visual-studio-code
+
+- name: Ensures packages are present via homebrew
+  community.general.homebrew:
+    name: "{{ item }}"
+    path: "/Applications"
+    state: present
+  with_items:
+    - gnupg
+    - wget
+  ignore_errors: yes
+  tags:
+    - packages
+

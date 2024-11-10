@@ -1,0 +1,10 @@
+# main.yml
+
+- name: Set up Mac
+  hosts: localhost
+  vars:
+    install_homebrew_if_missing: True
+
+  tasks:
+    - import_tasks: ./tasks/homebrew.yml
+

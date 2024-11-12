@@ -1,8 +1,8 @@
 ---
 - name: Check if Rust is already installed
-  command: rustc --version
+  stat:
+    path: "{{ ansible_env.HOME }}/.cargo/bin/rustc"
   register: rust_installed
-  ignore_errors: yes
 
 - name: Download and install Rust
   shell: |
@@ -12,17 +12,17 @@
   environment:
     - CARGO_HOME: "{{ ansible_env.HOME }}/.cargo"
     - RUSTUP_HOME: "{{ ansible_env.HOME }}/.rustup"
-  when: rust_installed.rc != 0
+  when: not rust_installed.stat.exists
 
 - name: Ensure Cargo bin directory is in PATH
   lineinfile:
     path: "{{ ansible_env.HOME }}/.zshenv"
     line: 'export PATH="$HOME/.cargo/bin:$PATH"'
     state: present
-  when: rust_installed.rc != 0
+  when: not rust_installed.stat.exists
 
 - name: Reload .zshenv if Rust was just installed
   shell: source "{{ ansible_env.HOME }}/.zshenv"
   args:
     executable: /bin/zsh
-  when: rust_installed.rc != 0
+  when: not rust_installed.stat.exists

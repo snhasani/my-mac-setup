@@ -1,0 +1,16 @@
+- name: Check if uv is already installed
+  stat:
+    path: "{{ ansible_env.HOME }}/.local/bin/uv"
+  register: uv_stat
+
+- name: Install uv if not already installed
+  shell: curl -LsSf https://astral.sh/uv/install.sh | sh
+  when: not uv_stat.stat.exists
+  args:
+    executable: /bin/zsh
+
+- name: Reload .zshrc if uv was just installed
+  shell: source "{{ ansible_env.HOME }}/.zshrc"
+  args:
+    executable: /bin/zsh
+  when: not uv_stat.stat.exists

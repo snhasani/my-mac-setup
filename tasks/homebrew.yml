@@ -29,6 +29,7 @@
     path: "/Applications"
     state: present
   with_items:
+    - direnv
     - gnupg
     - wget
     - xz

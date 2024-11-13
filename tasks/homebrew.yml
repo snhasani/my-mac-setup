@@ -30,7 +30,6 @@
     state: present
   with_items:
     - gnupg
-    - pyenv
     - wget
     - xz
   ignore_errors: yes

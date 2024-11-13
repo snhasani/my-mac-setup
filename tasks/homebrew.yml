@@ -31,6 +31,7 @@
   with_items:
     - direnv
     - gnupg
+    - ruff
     - wget
     - xz
   ignore_errors: yes

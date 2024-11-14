@@ -1,0 +1,22 @@
+- name: Check if nvm is installed
+  stat:
+    path: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+  register: nvm_is_installed
+
+- name: Install or update nvm
+  ansible.builtin.shell: |
+    if [ -d "{{ ansible_env.HOME }}/.nvm" ]; then
+      cd "{{ ansible_env.HOME }}/.nvm" && git fetch --tags origin && git checkout `git describe --abbrev=0 --tags`
+    else
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+    fi
+  args:
+    executable: /bin/bash
+  when: not nvm_is_installed.stat.exists
+
+- name: Verify nvm installation
+  ansible.builtin.shell: "source {{ ansible_env.HOME }}/.nvm/nvm.sh && command -v nvm"
+  register: nvm_command_check
+  changed_when: false
+  failed_when: nvm_command_check.stdout != "nvm"
+  when: not nvm_is_installed.stat.exists

@@ -1,0 +1,39 @@
+- name: Get the latest Node.js version
+  ansible.builtin.shell: |
+    source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm version-remote
+  register: latest_version
+  changed_when: false
+
+- name: Get the latest LTS Node.js version
+  ansible.builtin.shell: |
+    source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm version-remote --lts
+  register: latest_lts_version
+  changed_when: false
+
+- name: Check if latest Node.js version is installed
+  ansible.builtin.shell: |
+    source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm ls "{{ latest_version.stdout }}"
+  register: is_latest_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install latest Node.js version if not installed
+  ansible.builtin.shell: |
+    source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm install "{{ latest_version.stdout }}"
+  environment:
+    NVM_DIR: "{{ ansible_env.HOME }}/.nvm"
+  when: '"N/A" in is_latest_installed.stdout'
+
+- name: Check if latest LTS Node.js version is installed
+  ansible.builtin.shell: |
+    source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm ls "{{ latest_lts_version.stdout }}"
+  register: is_latest_lts_installed
+  changed_when: false
+  failed_when: false
+
+- name: Install latest LTS Node.js version if not installed
+  ansible.builtin.shell: |
+    source {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm install "{{ latest_lts_version.stdout }}"
+  environment:
+    NVM_DIR: "{{ ansible_env.HOME }}/.nvm"
+  when: '"N/A" in is_latest_lts_installed.stdout'

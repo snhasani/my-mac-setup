@@ -29,6 +29,8 @@
     path: "/Applications"
     state: present
   with_items:
+    - coreutils
+    - curl
     - direnv
     - git
     - gnupg

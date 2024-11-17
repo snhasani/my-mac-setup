@@ -7,6 +7,7 @@
 
   tasks:
     - import_tasks: ./tasks/homebrew.yml
+    - import_tasks: ./tasks/install_asdf.yml
     - import_tasks: ./tasks/install_nvm.yml
     - import_tasks: ./tasks/install_node.yml
     - import_tasks: ./tasks/setup_python.yml

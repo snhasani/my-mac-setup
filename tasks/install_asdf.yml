@@ -1,0 +1,40 @@
+
+- name: Fetch the latest release version of asdf
+  uri:
+    url: https://api.github.com/repos/asdf-vm/asdf/releases/latest
+    method: GET
+    return_content: yes
+  register: asdf_release
+
+- name: Extract the latest version tag
+  set_fact:
+    asdf_version: "{{ asdf_release.json.tag_name }}"
+
+- name: Check if asdf is already installed
+  stat:
+    path: "{{ ansible_env.HOME }}/.asdf"
+  register: asdf_dir
+
+- name: Check the current installed version of asdf
+  command: git -C "{{ ansible_env.HOME }}/.asdf" describe --tags
+  register: current_version
+  changed_when: false
+  ignore_errors: yes
+  when: asdf_dir.stat.exists
+
+- name: Install asdf (if not installed)
+  git:
+    repo: https://github.com/asdf-vm/asdf.git
+    dest: "{{ ansible_env.HOME }}/.asdf"
+    version: "{{ asdf_version }}"
+  when: not asdf_dir.stat.exists
+
+- name: Update asdf to the latest version
+  git:
+    repo: https://github.com/asdf-vm/asdf.git
+    dest: "{{ ansible_env.HOME }}/.asdf"
+    version: "{{ asdf_version }}"
+    update: yes
+  when:
+    - asdf_dir.stat.exists
+    - current_version.stdout != asdf_version

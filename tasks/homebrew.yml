@@ -30,6 +30,7 @@
     state: present
   with_items:
     - direnv
+    - git
     - gnupg
     - ruff
     - wget

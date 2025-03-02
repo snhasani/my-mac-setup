@@ -29,6 +29,7 @@
     path: "/Applications"
     state: present
   with_items:
+    - bat
     - coreutils
     - curl
     - direnv
